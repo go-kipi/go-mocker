@@ -1,8 +1,8 @@
 package reply
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/google/martian/v3/log"
 	"net/http"
 )
 
@@ -22,6 +22,7 @@ type BaseServiceReply struct {
 }
 
 func SuccessReply(c *gin.Context, reply interface{}) {
+	fmt.Println("success:", reply)
 	serviceReply := ServiceReply{}
 	serviceReply.Status = "success"
 	serviceReply.Data = reply
@@ -29,7 +30,7 @@ func SuccessReply(c *gin.Context, reply interface{}) {
 }
 
 func ErrorReply(c *gin.Context, msg string, err error) {
-	log.Errorf(msg, err)
+	fmt.Println("error: ", msg, err)
 	serviceReply := ServiceReply{}
 	serviceReply.Status = "error"
 	serviceReply.Data = err
