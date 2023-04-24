@@ -1,12 +1,33 @@
 package main
 
 import (
-	. "github.com/go-kipi/kipimanager"
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/go-kipi/go-mocker/db"
 	cors "github.com/itsjamie/gin-cors"
+	"github.com/mandrigin/gin-spa/spa"
+	"os"
 	"time"
 )
 
-func initRouters(router *KipiRouter) {
+func initRouters() *gin.Engine {
+	router := gin.New()
+	router.TrustedPlatform = gin.PlatformGoogleAppEngine
+	router.TrustedPlatform = "X-CDN-IP"
+	router.SetTrustedProxies([]string{})
+	router.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
+		return fmt.Sprintf("%s - [%s] \"%s %s %s %d %s \"%s\" %s\"\n",
+			param.ClientIP,
+			param.TimeStamp.Format(time.RFC1123),
+			param.Method,
+			param.Path,
+			param.Request.Proto,
+			param.StatusCode,
+			param.Latency,
+			param.Request.UserAgent(),
+			param.ErrorMessage,
+		)
+	}))
 	router.Use(cors.Middleware(cors.Config{
 		Origins:         "*",
 		Methods:         "GET, PUT, POST, DELETE",
@@ -17,12 +38,19 @@ func initRouters(router *KipiRouter) {
 		ValidateHeaders: false,
 	}))
 
-	router.POST("/getAllMocks", Handle(&getAllMocks{}))
-	router.POST("/getMockById", Handle(&getMockById{}))
-	router.POST("/updateMockById", Handle(&updateMockById{}))
-	router.POST("/deleteMockById", Handle(&deleteMockById{}))
+	mongoStr := os.Getenv("mongo")
+	mongoDb = db.InitMongo(mongoStr)
 
-	router.POST("/createMock", Handle(&createMock{}))
-	//router.Use(spa.Middleware("/", "./dist"))
+	router.POST("/getAllMocks", getAllMocks)
+	router.POST("/getMockById", getMockById)
+	//router.POST("/updateMockById", updateMockById)
+	//router.POST("/deleteMockById", deleteMockById)
+	//
+	router.POST("/createMock", createMock)
+	//router.POST("/reply/:api", Handle(&dynamicApi{}))
 
+	router.POST("/reply/:api", dynamicApi)
+
+	router.Use(spa.Middleware("/", "./dist"))
+	return router
 }

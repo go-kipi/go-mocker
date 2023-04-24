@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/go-kipi/kipimanager v0.0.4
+	github.com/google/martian/v3 v3.3.2
 	github.com/itsjamie/gin-cors v0.0.0-20220228161158-ef28d3d2a0a8
 	go.mongodb.org/mongo-driver v1.11.4
 )
@@ -20,6 +21,7 @@ require (
 	github.com/bytedance/sonic v1.8.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
+	github.com/gin-gonic/contrib v0.0.0-20221130124618-7e01895a63f2 // indirect
 	github.com/gin-gonic/gin v1.9.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
@@ -28,7 +30,7 @@ require (
 	github.com/goccy/go-json v0.10.0 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
-	github.com/golang/snappy v0.0.1 // indirect
+	github.com/golang/snappy v0.0.3 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
 	github.com/google/s2a-go v0.1.2 // indirect
 	github.com/google/uuid v1.3.0 // indirect
@@ -38,6 +40,7 @@ require (
 	github.com/klauspost/compress v1.13.6 // indirect
 	github.com/klauspost/cpuid/v2 v2.0.9 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
+	github.com/mandrigin/gin-spa v0.0.0-20200212133200-790d0c0c7335 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect

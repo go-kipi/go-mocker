@@ -1,12 +1,20 @@
 package main
 
 import (
-	. "github.com/go-kipi/kipimanager"
-	. "github.com/go-kipi/kipimanager/settings"
+	"go.mongodb.org/mongo-driver/mongo"
+	"os"
 )
 
-var serviceConf Configuration
+var mongoDb *mongo.Client
 
 func main() {
-	InitalizeNewHTTPService(&serviceConf, "0.0.1", initRouters)
+	r := initRouters()
+	r.Run(":" + getPort())
+}
+func getPort() string {
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "9999"
+	}
+	return port
 }
