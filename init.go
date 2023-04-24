@@ -43,11 +43,10 @@ func initRouters() *gin.Engine {
 
 	router.POST("/getAllMocks", getAllMocks)
 	router.POST("/getMockById", getMockById)
-	//router.POST("/updateMockById", updateMockById)
-	//router.POST("/deleteMockById", deleteMockById)
-	//
+	router.POST("/updateMockById", updateMockById)
+	router.POST("/deleteMockById", deleteMockById)
+
 	router.POST("/createMock", createMock)
-	//router.POST("/reply/:api", Handle(&dynamicApi{}))
 
 	router.POST("/reply/:api", dynamicApi)
 

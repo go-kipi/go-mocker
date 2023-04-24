@@ -1,10 +1,5 @@
 package main
 
-import (
-	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/mongo"
-)
-
 type Mock struct {
 	ApiName     string      `json:"apiName"bson:"apiName"`
 	Key         string      `json:"key" bson:"key"`
@@ -14,7 +9,7 @@ type Mock struct {
 	TimeOut     int         `json:"timeOut,omitempty" bson:"timeOut,omitempty"`
 }
 
-type KipiContext struct {
-	*gin.Context
-	*mongo.Client
+type updateMock struct {
+	Id   string `json:"id"`
+	Mock `json:"mock"`
 }
