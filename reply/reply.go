@@ -16,8 +16,8 @@ type BaseErrorReply struct {
 }
 
 type BaseServiceReply struct {
-	Status string         `json:"status"`
-	Error  BaseErrorReply `json:"error,omitempty"`
+	Status string          `json:"status"`
+	Error  *BaseErrorReply `json:"error,omitempty"`
 }
 
 func SuccessReply(c *gin.Context, reply interface{}) {

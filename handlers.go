@@ -158,3 +158,15 @@ func dynamicApi(c *gin.Context) {
 		}
 	}
 }
+
+func getIp(c *gin.Context) {
+	type IP struct {
+		RemoteIP string `json:"remoteIP"`
+		ClientIP string `json:"clientIP"`
+	}
+	var ip IP
+	ip.RemoteIP = c.RemoteIP()
+	ip.ClientIP = c.ClientIP()
+
+	reply.SuccessReply(c, ip)
+}
