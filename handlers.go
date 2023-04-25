@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-kipi/go-mocker/db"
 	"github.com/go-kipi/go-mocker/reply"
@@ -10,15 +11,10 @@ import (
 )
 
 func getAllMocks(c *gin.Context) {
-	if res, err := mongoDb.Database(db.Mongo_DataBase).Collection(db.Mongo_Collection).Find(c, bson.D{{}}, nil); err != nil {
-		reply.ErrorReply(c, "getAllMocks - Find", err)
+	if mock, err := getAllMocksFromDb(c); err != nil {
+		reply.ErrorReply(c, "getAllMocks - getAllMocksFromDb", err)
 	} else {
-		var result []map[string]interface{}
-		err = res.All(c, &result)
-		if err != nil {
-			reply.ErrorReply(c, "getAllMocks - All", err)
-		}
-		reply.SuccessReply(c, result)
+		reply.SuccessReply(c, mock)
 	}
 }
 
@@ -26,18 +22,31 @@ func createMock(c *gin.Context) {
 	var mock Mock
 	if err := c.ShouldBindJSON(&mock); err != nil {
 		reply.ErrorReply(c, "createMock - ShouldBindJSON", err)
+		return
 	}
-	if res, err := mongoDb.Database(db.Mongo_DataBase).Collection(db.Mongo_Collection).InsertOne(c, Mock{
-		ApiName:     mock.ApiName,
-		Key:         mock.Key,
-		Value:       mock.Value,
-		Reply:       mock.Reply,
-		HandlerType: mock.HandlerType,
-		TimeOut:     mock.TimeOut,
-	}, nil); err != nil {
-		reply.ErrorReply(c, "createMock - InsertOne", err)
+
+	isValid, err := validateApiNameKeyValue(c, mock)
+	if err != nil {
+		reply.ErrorReply(c, "createMock - validateApiNameKeyValue", err)
+		return
+	}
+	if isValid {
+		if res, err := mongoDb.Database(db.Mongo_DataBase).Collection(db.Mongo_Collection).InsertOne(c, Mock{
+			ApiName:     mock.ApiName,
+			Key:         mock.Key,
+			Value:       mock.Value,
+			Reply:       mock.Reply,
+			HandlerType: mock.HandlerType,
+			TimeOut:     mock.TimeOut,
+		}, nil); err != nil {
+			reply.ErrorReply(c, "createMock - InsertOne", err)
+			return
+		} else {
+			reply.SuccessReply(c, res)
+		}
 	} else {
-		reply.SuccessReply(c, res)
+		reply.ErrorUserReply(c, fmt.Sprintf("%s,%s,%v are already exist", mock.ApiName, mock.Key, mock.Value), err)
+		return
 	}
 
 }
@@ -51,32 +60,49 @@ func getMockById(c *gin.Context) {
 	objectId, err := primitive.ObjectIDFromHex(reqData["id"])
 	if err != nil {
 		reply.ErrorReply(c, "getMockById - primitive.ObjectIDFromHex", err)
+		return
 	}
 	var mockRes Mock
 
 	filter := bson.M{"_id": objectId}
 
-	if err := mongoDb.Database(db.Mongo_DataBase).Collection(db.Mongo_Collection).FindOne(c, filter, nil).Decode(&mockRes); err != nil {
-		reply.ErrorReply(c, "getMockById - FindOne", err)
-	} else {
-		reply.SuccessReply(c, mockRes)
+	res := mongoDb.Database(db.Mongo_DataBase).Collection(db.Mongo_Collection).FindOne(c, filter, nil)
+	if res.Err() != nil { //check if empty
+		reply.ErrorReply(c, "getMockById - FindOne", res.Err())
+		return
 	}
-
+	err = res.Decode(&mockRes)
+	if res.Err() != nil {
+		reply.ErrorReply(c, "getMockById - Decode", err)
+		return
+	}
+	reply.SuccessReply(c, mockRes)
 }
 
 func updateMockById(c *gin.Context) {
-	var mock updateMock
+	var mock Mock
 	if err := c.ShouldBindJSON(&mock); err != nil {
 		reply.ErrorReply(c, "updateMockById - ShouldBindJSON", err)
+		return
 	}
 
 	objectId, err := primitive.ObjectIDFromHex(mock.Id)
 	if err != nil {
 		reply.ErrorReply(c, "updateMockById - primitive.ObjectIDFromHex", err)
+		return
 	}
 
 	filter := bson.M{"_id": objectId}
-	if res, err := mongoDb.Database(db.Mongo_DataBase).Collection(db.Mongo_Collection).UpdateOne(c, filter, mock, nil); err != nil {
+
+	update := bson.D{{"$set", Mock{
+		ApiName:     mock.ApiName,
+		Key:         mock.Key,
+		Value:       mock.Value,
+		Reply:       mock.Reply,
+		HandlerType: mock.HandlerType,
+	}}}
+
+	if res, err := mongoDb.Database(db.Mongo_DataBase).Collection(db.Mongo_Collection).UpdateOne(c, filter, update, nil); err != nil {
 		reply.ErrorReply(c, "updateMockById - UpdateOne", err)
 	} else {
 		reply.SuccessReply(c, res)
@@ -92,6 +118,7 @@ func deleteMockById(c *gin.Context) {
 	objectId, err := primitive.ObjectIDFromHex(reqData["id"])
 	if err != nil {
 		reply.ErrorReply(c, "deleteMockById - primitive.ObjectIDFromHex", err)
+		return
 	}
 
 	filter := bson.M{"_id": objectId}
@@ -107,6 +134,7 @@ func dynamicApi(c *gin.Context) {
 	var reqData = make(map[string]interface{})
 	if err := c.ShouldBindJSON(&reqData); err != nil {
 		reply.ErrorReply(c, "dynamicApi - ShouldBindJSON", err)
+		return
 	}
 	param := c.Param("api")
 
@@ -114,15 +142,18 @@ func dynamicApi(c *gin.Context) {
 
 	if res, err := mongoDb.Database(db.Mongo_DataBase).Collection(db.Mongo_Collection).Find(c, filter, nil); err != nil {
 		reply.ErrorReply(c, "dynamicApi - Find", err)
+		return
 	} else {
 		var mockRes []Mock
 		if err := res.All(c, &mockRes); err != nil {
 			reply.ErrorReply(c, "dynamicApi - All", err)
+			return
 		}
 		for _, mock := range mockRes {
 			if reqData[mock.Key] == mock.Value {
 				time.Sleep(time.Duration(mock.TimeOut) * time.Second)
-				c.JSON(200, mock.Reply)
+				c.JSON(200, mock.mockReply())
+				return
 			}
 		}
 	}

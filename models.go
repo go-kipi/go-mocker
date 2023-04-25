@@ -1,6 +1,12 @@
 package main
 
+import (
+	"encoding/json"
+	"fmt"
+)
+
 type Mock struct {
+	Id          string      `json:"id,omitempty" bson:"_id,omitempty"`
 	ApiName     string      `json:"apiName"bson:"apiName"`
 	Key         string      `json:"key" bson:"key"`
 	Value       interface{} `json:"value" bson:"value"`
@@ -9,7 +15,10 @@ type Mock struct {
 	TimeOut     int         `json:"timeOut,omitempty" bson:"timeOut,omitempty"`
 }
 
-type updateMock struct {
-	Id   string `json:"id"`
-	Mock `json:"mock"`
+func (mock *Mock) mockReply() (jsonMap map[string]interface{}) {
+	err := json.Unmarshal([]byte(mock.Reply), &jsonMap)
+	if err != nil {
+		fmt.Println("mockReply ", err)
+	}
+	return jsonMap
 }

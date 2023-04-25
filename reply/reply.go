@@ -3,7 +3,6 @@ package reply
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type ServiceReply struct {
@@ -17,8 +16,8 @@ type BaseErrorReply struct {
 }
 
 type BaseServiceReply struct {
-	Status string          `json:"status"`
-	Error  *BaseErrorReply `json:"error,omitempty"`
+	Status string         `json:"status"`
+	Error  BaseErrorReply `json:"error,omitempty"`
 }
 
 func SuccessReply(c *gin.Context, reply interface{}) {
@@ -26,7 +25,7 @@ func SuccessReply(c *gin.Context, reply interface{}) {
 	serviceReply := ServiceReply{}
 	serviceReply.Status = "success"
 	serviceReply.Data = reply
-	c.JSON(http.StatusOK, serviceReply)
+	c.JSON(200, serviceReply)
 }
 
 func ErrorReply(c *gin.Context, msg string, err error) {
@@ -34,5 +33,13 @@ func ErrorReply(c *gin.Context, msg string, err error) {
 	serviceReply := ServiceReply{}
 	serviceReply.Status = "error"
 	serviceReply.Data = err
-	c.JSON(http.StatusOK, serviceReply)
+	c.JSON(400, serviceReply)
+}
+
+func ErrorUserReply(c *gin.Context, msg string, err error) {
+	fmt.Println("error: ", msg, err)
+	serviceReply := ServiceReply{}
+	serviceReply.Status = "error"
+	serviceReply.Data = msg
+	c.JSON(500, serviceReply)
 }

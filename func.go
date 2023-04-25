@@ -1,31 +1,35 @@
 package main
 
 import (
-	"encoding/json"
-	"github.com/google/martian/v3/log"
+	"github.com/gin-gonic/gin"
+	"github.com/go-kipi/go-mocker/db"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
-//func getByFilter(c *KipiContext, filter interface{}, opt *options.FindOptions) ([]mongoVal, error) {
-//	res, err := c.Client.Database(mongo_DataBase).Collection(mongo_Collection).Find(c, filter, opt)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	var result []mongoVal
-//	err = res.All(c, &result)
-//	if err != nil {
-//		return nil, err
-//
-//	}
-//	fmt.Println(result)
-//	return result, nil
-//}
-
-func (mock Mock) MockReply() interface{} {
-	var jsonReply = make(map[string]interface{})
-	err := json.Unmarshal([]byte(mock.Reply), &jsonReply)
-	if err != nil {
-		log.Errorf("mock reply", err)
+func validateApiNameKeyValue(c *gin.Context, mock Mock) (bool, error) {
+	//TODO: replace in mongo count query
+	// count > 0 return error
+	if mockes, err := getAllMocksFromDb(c); err != nil {
+		return false, err
+	} else {
+		for _, v := range mockes {
+			if v.HandlerType == mock.HandlerType && v.Key == mock.Key && v.Value == mock.Value {
+				return false, nil
+			}
+		}
 	}
-	return jsonReply
+	return true, nil
+}
+
+func getAllMocksFromDb(c *gin.Context) ([]Mock, error) {
+	var mock []Mock
+	if res, err := mongoDb.Database(db.Mongo_DataBase).Collection(db.Mongo_Collection).Find(c, bson.D{{}}, nil); err != nil {
+		return mock, err
+	} else {
+		err = res.All(c, &mock)
+		if err != nil {
+			return mock, err
+		}
+		return mock, nil
+	}
 }
