@@ -1,6 +1,6 @@
 # go-mocker
 
-url: [https://go-mocker.onrender.com] https://go-mocker.onrender.com
+url: https://go-mocker.onrender.com
 ## Api
 POST   /getAllMocks
 POST   /getMockById
