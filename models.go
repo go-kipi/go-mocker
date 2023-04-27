@@ -5,6 +5,11 @@ import (
 	"fmt"
 )
 
+const (
+	XForwardedFor = "X-Forwarded-For"
+	XRealIp       = "X-Real-Ip"
+)
+
 type Mock struct {
 	Id          string      `json:"id,omitempty" bson:"_id,omitempty"`
 	ApiName     string      `json:"apiName"bson:"apiName"`
