@@ -160,7 +160,5 @@ func dynamicApi(c *gin.Context) {
 }
 
 func getIp(c *gin.Context) {
-	ip := c.ClientIP()
-
-	reply.SuccessReply(c, ip)
+	reply.SuccessReply(c, c.Request.RemoteAddr)
 }
