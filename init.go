@@ -39,7 +39,11 @@ func initRouters() *gin.Engine {
 	}))
 
 	mongoStr := os.Getenv("mongo")
-	mongoDb = db.InitMongo(mongoStr)
+	if mongoStr != "" {
+		mongoDb = db.InitMongo(mongoStr)
+	} else {
+		panic("mongo env is missing")
+	}
 
 	router.POST("/getAllMocks", getAllMocks)
 	router.POST("/getMockById", getMockById)
@@ -48,7 +52,7 @@ func initRouters() *gin.Engine {
 	router.POST("/createMock", createMock)
 	router.POST("/reply/:api", dynamicApi)
 
-	router.POST("/ip", getIp)
+	router.GET("/ip", getIp)
 	router.Use(spa.Middleware("/", "./dist"))
 	return router
 }
