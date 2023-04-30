@@ -164,7 +164,9 @@ func getIp(c *gin.Context) {
 	for _, h := range []string{XForwardedFor, XRealIp} {
 		ip := c.Request.Header.Get(h)
 		fmt.Println(ip)
-		ips = append(ips, ip)
+		if ip != "" {
+			ips = append(ips, ip)
+		}
 	}
 
 	reply.SuccessReply(c, ips)
