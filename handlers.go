@@ -162,6 +162,7 @@ func dynamicApi(c *gin.Context) {
 func getIp(c *gin.Context) {
 	var ip string
 	ip = c.Request.Header.Get(XRealIp)
+	fmt.Println(c)
 	if ip == "" {
 		ip = c.Request.RemoteAddr
 	}

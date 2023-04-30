@@ -15,6 +15,7 @@ func initRouters() *gin.Engine {
 	router.TrustedPlatform = gin.PlatformGoogleAppEngine
 	router.TrustedPlatform = "X-CDN-IP"
 	router.SetTrustedProxies([]string{})
+	router.RemoteIPHeaders = []string{"X-Forwarded-For", "X-Real-IP"}
 	router.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
 		return fmt.Sprintf("%s - [%s] \"%s %s %s %d %s \"%s\" %s\"\n",
 			param.ClientIP,
