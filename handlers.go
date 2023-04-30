@@ -160,11 +160,12 @@ func dynamicApi(c *gin.Context) {
 }
 
 func getIp(c *gin.Context) {
-	var ip string
-	ip = c.Request.Header.Get(XRealIp)
-	fmt.Println(c)
-	if ip == "" {
-		ip = c.Request.RemoteAddr
+	var ips []string
+	for _, h := range []string{XForwardedFor, XRealIp} {
+		ip := c.Request.Header.Get(h)
+		fmt.Println(ip)
+		ips = append(ips, ip)
 	}
-	reply.SuccessReply(c, ip)
+
+	reply.SuccessReply(c, ips)
 }
