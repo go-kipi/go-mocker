@@ -3,11 +3,6 @@
       <div >
           <Card v-for="mock in mocks" :key="mock.id" :mock="mock" />
       </div>
-<!--      {{  mocks}}-->
-<!--      <Card />-->
-<!--      <Card />-->
-<!--      <Card />-->
-<!--      <Card />-->
   </div>
 </template>
 

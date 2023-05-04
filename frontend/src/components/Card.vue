@@ -26,6 +26,7 @@ export default {
         deleteById(){
             if (confirm("Are you sure?")){
                 this.$store.dispatch('deleteMockById', {id: this.mock.id}).then(() => {
+                    this.$store.dispatch('getAllMocks')
                     console.log("delete")
                 })
                     .catch(err => console.log(err))

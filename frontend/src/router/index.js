@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
+import CreateMock from "@/views/CreateMock.vue";
 
 Vue.use(VueRouter)
 
@@ -9,6 +10,11 @@ const routes = [
     path: '/',
     name: 'Home',
     component: Home
+  },
+  {
+    path: '/create-mock',
+    name: 'CreateMock',
+    component: CreateMock
   },
   {
     path: '/about',
