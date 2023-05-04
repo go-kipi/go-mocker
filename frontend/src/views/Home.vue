@@ -14,8 +14,6 @@
 <script>
 
 import Card from "@/components/Card.vue"
-import axios from 'axios'
-
 export default {
   name: 'Home',
   components: {
@@ -23,7 +21,6 @@ export default {
   },
     data(){
       return{
-          // mocks:null
       }
     },
     computed:{
@@ -32,17 +29,7 @@ export default {
         },
     },
     methods:{
-      getAllMocks(){
-          axios.post("http://127.0.0.1:45765/getAllMocks",{})
-              .then(res=>{
-                  console.log(res.data)
-                  this.mocks=res.data.data
-              })
-              .catch(err => console.log(err))
-      }
-    },
-    async created() {
-        await this.$store.dispatch('getAllMocks')
+
     }
 }
 </script>

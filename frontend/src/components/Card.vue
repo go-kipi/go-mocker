@@ -11,7 +11,7 @@
                 </div>
                 <div class="card-footer">
                     <button class="card-btn">edit</button>
-                    <button class="card-btn">delete</button>
+                    <button class="card-btn" @click="deleteById">delete</button>
                 </div>
             </div>
         </div>
@@ -22,7 +22,16 @@
 export default {
     name: 'Card',
     props:["mock"],
-
+    methods:{
+        deleteById(){
+            if (confirm("Are you sure?")){
+                this.$store.dispatch('deleteMockById', {id: this.mock.id}).then(() => {
+                    console.log("delete")
+                })
+                    .catch(err => console.log(err))
+            }
+        }
+  }
 }
 </script>
 
